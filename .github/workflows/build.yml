@@ -1,0 +1,46 @@
+name: Build libayaznative
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Android NDK Kur
+        uses: android-actions/setup-android@v3
+
+      - name: NDK Yükle
+        run: |
+          echo "y" | sdkmanager "ndk;27.0.12077973" --sdk_root=$ANDROID_SDK_ROOT
+          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/27.0.12077973" >> $GITHUB_ENV
+
+      - name: ARM64 .so Derle
+        run: |
+          mkdir -p build
+          cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-26 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -S . \
+            -B build
+          cmake --build build --target ayaznative
+
+      - name: .so Dosyasını Topla
+        run: |
+          mkdir -p output
+          cp build/libayaznative.so output/
+
+      - name: Artifact Olarak Yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: libayaznative-arm64
+          path: output/libayaznative.so
+          retention-days: 7
