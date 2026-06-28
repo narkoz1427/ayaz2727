@@ -6,14 +6,14 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(
     ayaznative
     SHARED
-    src/jni_bridge.cpp
-    src/game_reader.cpp
-    src/farm_game_api.cpp
-    src/farm_loot.cpp
-    src/auto_farm.cpp
+    native/src/jni_bridge.cpp
+    native/src/game_reader.cpp
+    native/src/farm_game_api.cpp
+    native/src/farm_loot.cpp
+    native/src/auto_farm.cpp
 )
 
-target_include_directories(ayaznative PRIVATE include)
+target_include_directories(ayaznative PRIVATE native/include)
 
 find_library(log-lib log)
 find_library(dl-lib  dl)
